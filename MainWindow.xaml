@@ -1,12 +1,88 @@
-﻿<Window x:Class="WeatherApp.WPF.Learning.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WeatherApp.WPF.Learning"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+﻿<Window
+    x:Class="WeatherApp.WPF.Learning.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:WeatherApp.WPF.Learning"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:WeatherApp.WPF.Learning.ViewModel"
+    Title="MainWindow"
+    Width="800"
+    Height="450"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <vm:WeatherVM x:Key="vm" />
+    </Window.Resources>
+    <Grid DataContext="{StaticResource vm}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="3*" />
+        </Grid.ColumnDefinitions>
 
+        <Border
+            Background="LightGray"
+            BorderBrush="Black"
+            BorderThickness="0,0,3,0">
+            <StackPanel Grid.Column="0" Margin="5,5,0,0">
+                <TextBlock FontWeight="Bold" Text="Search for a city" />
+                <TextBox Margin="0,0,5,0" Text="{Binding Query, Mode=TwoWay}" />
+                <Button Margin="0,3,5,3" Content="Search" />
+                <ListView Margin="0,0,5,0">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <TextBlock />
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackPanel>
+        </Border>
+
+
+        <Grid
+            Grid.Column="1"
+            Width="600"
+            Height="434"
+            Background="#4392F1">
+
+
+            <StackPanel
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Orientation="Horizontal">
+
+                <Border
+                    Padding="9"
+                    BorderBrush="White"
+                    BorderThickness="3"
+                    CornerRadius="12">
+                    <Grid DataContext="{Binding CurrentConditions}">
+
+                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <TextBlock
+                                Width="165"
+                                DataContext="{StaticResource vm}"
+                                FontSize="20"
+                                Foreground="#f4f4f8"
+                                Text="{Binding SelectedCity.LocalizedName}" />
+                            <TextBlock
+                                FontSize="18"
+                                Foreground="#f4f4f8"
+                                RenderTransformOrigin="0.715,0.55"
+                                Text="{Binding WeatherText}" />
+                        </StackPanel>
+                        <TextBlock
+                            Margin="174,0,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            FontSize="30"
+                            Foreground="#f4f4f8"
+                            Text="{Binding Temperature.Metric.Value, StringFormat={}{0}°C}" />
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+        </Grid>
     </Grid>
 </Window>
