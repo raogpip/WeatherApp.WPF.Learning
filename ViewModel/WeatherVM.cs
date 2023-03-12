@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WeatherApp.WPF.Learning.Model;
+using WeatherApp.WPF.Learning.ViewModel.Commands;
+using WeatherApp.WPF.Learning.ViewModel.Helpers;
 
 namespace WeatherApp.WPF.Learning.ViewModel
 {
@@ -34,15 +32,68 @@ namespace WeatherApp.WPF.Learning.ViewModel
             }
         }
 
+        public ObservableCollection<City> Cities { get; set; }
+
         private City selectedCity; 
 
         public City SelectedCity
         {
             get { return selectedCity; }
-            set { selectedCity = value; OnPropertyChanged("SelectedCity"); }
+            set 
+            { 
+                selectedCity = value; 
+                OnPropertyChanged("SelectedCity"); 
+                GetCurrentConditions(); 
+            }
         }
 
+        public SearchCommand SearchCommand { get; set; }
 
+
+        public WeatherVM()
+        {
+            if(DesignerProperties.GetIsInDesignMode(new System.Windows.DependencyObject()))
+            {
+                SelectedCity = new City()
+                {
+                    LocalizedName = "Kyiv"
+                };
+                CurrentConditions = new CurrentConditions()
+                {
+                    WeatherText = "Partly cloudy",
+                    Temperature = new Temperature()
+                    {
+                        Metric = new Units()
+                        {
+                            Value = "21"
+                        }
+                    }
+                };
+            }
+
+            SearchCommand = new SearchCommand(this);
+
+            Cities = new ObservableCollection<City>();
+        }
+
+        private async void GetCurrentConditions()
+        {
+            Query = string.Empty;
+            Cities.Clear();
+
+            CurrentConditions = await AccuWeatherHelper.GetCurrentConditions(SelectedCity.Key);
+        }
+
+        public async void MakeQuery()
+        {
+            var cities = await AccuWeatherHelper.GetCities(query);
+
+            Cities.Clear();
+            foreach (var city in cities) 
+            {
+                Cities.Add(city);
+            }
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
